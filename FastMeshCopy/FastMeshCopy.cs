@@ -122,7 +122,7 @@ public static class FastMeshCopyUtility
         }
     #else
             // PRE-UNITY 2020 WAY OF COPYING
-
+            outMesh.indexFormat = inMesh.indexFormat;
             outMesh.SetVertices(inMesh.vertices);
             outMesh.SetNormals(inMesh.normals);
             outMesh.SetUVs(0,inMesh.uv);
