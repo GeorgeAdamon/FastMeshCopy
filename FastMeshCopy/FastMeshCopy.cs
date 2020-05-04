@@ -30,14 +30,16 @@ public static class FastMeshCopyUtility
 
         if (outMesh == null)
         {
-            outMesh = new Mesh {name = "Mesh Copy"};
+            outMesh = new Mesh();
         }
         else
         {
             outMesh.Clear();
         }
-
-
+    
+        outMesh.name      = inMesh.name;
+        outMesh.bounds    = inMesh.bounds;
+        
         using (var readArray = Mesh.AcquireReadOnlyMeshData(inMesh))
         {
             //-------------------------------------------------------------
@@ -117,9 +119,6 @@ public static class FastMeshCopyUtility
 
 
             Mesh.ApplyAndDisposeWritableMeshData(writeArray, outMesh);
-
-
-        outMesh.RecalculateBounds();
     }
 
 #else
