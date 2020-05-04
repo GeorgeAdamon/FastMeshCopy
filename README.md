@@ -12,6 +12,12 @@ extension method. Simply call this method on a Mesh instance to perform the copy
 - Attach the [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) to a GameObject, and reference a Mesh in the inMesh field.
 - Run the game, and press the **Spacebar** to perform the mesh copy.
 
+
+## Limitations
+Currently copying BlendShapes and BoneWeights is not supported by Unity's API, so this zero-allocation effort ignores them for the time being.
+
 ## Performance Example
 Copying of a 98 MB mesh, creating only 80 Bytes of allocations for the Garbage Collector to clean-up.
 ![](/img/profiler_result.jpg)
+
+
