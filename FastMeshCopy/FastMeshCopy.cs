@@ -18,7 +18,8 @@ public static class FastMeshCopyUtility
     private const int SHORT_SIZE = 2;
     private const int INT_SIZE = 4;
     private const int FLOAT_SIZE = 4;
-    
+
+#if UNITY_2020_1_OR_NEWER
     /// <summary>
     /// Attempts to copy the data of the current <see cref="Mesh"/> to another one, as fast as possible,
     /// with minimal allocations (a few tens of bytes in scenarios with very large meshes).
@@ -33,38 +34,38 @@ public static class FastMeshCopyUtility
         }
         else
         {
-            outMesh.Clear(); 
+            outMesh.Clear();
         }
-        
-    #if UNITY_2020_1_OR_NEWER
+
+
         using (var readArray = Mesh.AcquireReadOnlyMeshData(inMesh))
         {
             //-------------------------------------------------------------
             // INPUT INFO
             //-------------------------------------------------------------
             var readData = readArray[0];
-            
+
             // Formats
             var vertexFormat = inMesh.GetVertexAttributes();
             var indexFormat  = inMesh.indexFormat;
-            
+
             // Counts
             var vertexCount = readData.vertexCount;
             var indexCount = 0;
 
             // Gather indices of all sub-meshes
-            for (var i = 0; i < inMesh.subMeshCount; i++) 
+            for (var i = 0; i < inMesh.subMeshCount; i++)
                 indexCount += (int) inMesh.GetIndexCount(i);
-            
+
 
             // Element Size in bytes
             var indexSize = indexFormat == IndexFormat.UInt16 ? SHORT_SIZE : INT_SIZE;
             var vertexSize = 0;
-            
+
             for (var i = 0; i < vertexFormat.Length; i++)
                 vertexSize += vertexFormat[i].dimension * FLOAT_SIZE;
-            
-            
+
+
             //-------------------------------------------------------------
             // OUTPUT SETUP
             //-------------------------------------------------------------
@@ -113,14 +114,26 @@ public static class FastMeshCopyUtility
 
             // Set all submeshes
             for (var i = 0; i < inMesh.subMeshCount; i++)
+            {
                 writeData.SetSubMesh(i,
                                      new SubMeshDescriptor((int) inMesh.GetIndexStart(i),
-                                                           (int) inMesh.GetIndexCount(i)));
+                                                           (int) inMesh.GetIndexCount(i)));}
 
 
             Mesh.ApplyAndDisposeWritableMeshData(writeArray, outMesh);
-        }
-    #else
+
+
+        outMesh.RecalculateBounds();
+    }
+
+#else
+
+    /// <summary>
+    /// Attempts to copy the data of the current <see cref="Mesh"/> to another one, as fast as possible,
+    /// with minimal allocations (a few tens of bytes in scenarios with very large meshes).
+    /// </summary>
+    public static void CopyTo(this Mesh inMesh, ref Mesh outMesh)
+    {
             // PRE-UNITY 2020 WAY OF COPYING
             outMesh.indexFormat = inMesh.indexFormat;
             outMesh.SetVertices(inMesh.vertices);
@@ -128,8 +141,7 @@ public static class FastMeshCopyUtility
             outMesh.SetUVs(0,inMesh.uv);
             outMesh.SetIndices(inMesh.GetIndices(0), inMesh.GetTopology(0), 0);
             outMesh.SetColors(inMesh.colors);
-    #endif
-
-        outMesh.RecalculateBounds();
     }
+#endif
+
 }
