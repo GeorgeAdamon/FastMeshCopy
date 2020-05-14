@@ -14,7 +14,7 @@ extension method. Simply call this method on a Mesh instance to perform the copy
 
 
 ## Limitations
-Accessing BlendShapes and BoneWeights without GC allocations is not supported by Unity's API, so this zero-allocation effort ignores them for the time being. See the [**discussion**](https://forum.unity.com/threads/feedback-wanted-mesh-scripting-api-improvements.684670/page-3#post-5800297)
+Accessing BlendShapes and BoneWeights without GC allocations is not supported by Unity's API, so this zero-allocation effort **ignores** them for the time being. See the [**discussion**](https://forum.unity.com/threads/feedback-wanted-mesh-scripting-api-improvements.684670/page-3#post-5800297)
 
 ## Performance Example
 Copying of a 98 MB mesh, creating only 80 Bytes of allocations for the Garbage Collector to clean-up.
