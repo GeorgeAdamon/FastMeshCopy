@@ -8,7 +8,7 @@ public static void CopyTo(this Mesh inMesh, ref Mesh outMesh){...}
 extension method. Simply call this method on a Mesh instance to perform the copy.
 
 ## Usage of the example
-- Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [MeshCopyExample.cs](FastMeshCopy/FastMeshCopy.cs) in your Unity Project.
+- Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [FastMeshCopy.cs](FastMeshCopy/FastMeshCopy.cs) in your Unity Project.
 - Attach the [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) to a GameObject, and reference a Mesh in the inMesh field.
 - Run the game, and press the **Spacebar** to perform the mesh copy.
 
