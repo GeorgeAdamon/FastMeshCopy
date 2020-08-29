@@ -9,8 +9,8 @@ extension method. Simply call this method on a Mesh instance to perform the copy
 
 ## Add as a Unity Package
 Add this line to your `Packages/manifest.json` file
-```json
-"ulc-tools-fastmeshcopy": "https://github.com/GeorgeAdamon/FastMeshCopy.git?path=/UnityProject/Assets/FastMeshCopy#master"
+```js
+"ulc-tools-fastmeshcopy": "https://github.com/GeorgeAdamon/FastMeshCopy.git?path=/UnityProject/Assets/FastMeshCopy#master",
 ```
 
 ## Usage of the example
