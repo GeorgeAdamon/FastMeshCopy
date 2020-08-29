@@ -8,10 +8,16 @@ public static void CopyTo(this Mesh inMesh, ref Mesh outMesh){...}
 extension method. Simply call this method on a Mesh instance to perform the copy.
 
 ## Usage of the example
-- Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [MeshCopyExample.cs](FastMeshCopy/FastMeshCopy.cs) in your Unity Project.
+- Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [FastMeshCopy.cs](FastMeshCopy/FastMeshCopy.cs) in your Unity Project.
 - Attach the [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) to a GameObject, and reference a Mesh in the inMesh field.
 - Run the game, and press the **Spacebar** to perform the mesh copy.
+
+
+## Limitations
+Accessing BlendShapes and BoneWeights without GC allocations is not supported by Unity's API, so this zero-allocation effort **ignores** them for the time being. See the [**discussion**](https://forum.unity.com/threads/feedback-wanted-mesh-scripting-api-improvements.684670/page-3#post-5800297)
 
 ## Performance Example
 Copying of a 98 MB mesh, creating only 80 Bytes of allocations for the Garbage Collector to clean-up.
 ![](/img/profiler_result.jpg)
+
+
