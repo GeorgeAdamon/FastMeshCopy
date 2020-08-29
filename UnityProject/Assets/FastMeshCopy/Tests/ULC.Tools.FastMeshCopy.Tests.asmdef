@@ -1,0 +1,15 @@
+{
+    "name": "ULC.Tools.FastMeshCopy.Tests",
+    "references": [
+        "GUID:0cd2acaf7c308174f84c55241253f210"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
