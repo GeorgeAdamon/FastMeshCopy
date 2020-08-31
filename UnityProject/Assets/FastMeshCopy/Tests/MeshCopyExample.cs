@@ -15,6 +15,8 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Tests
             mf = GetComponent<MeshFilter>();
             outMesh = new Mesh {name = "Empty Mesh"};
             mf.sharedMesh = outMesh;
+            
+            
         }
         
         private void Update()
