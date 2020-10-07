@@ -1,5 +1,5 @@
 # FastMeshCopy
-Zero-allocation copying of Meshes using the new [**MeshData**](https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Mesh.AllocateWritableMeshData.html) functionality in Unity 2020.1+ .
+Zero-allocation copying of Meshes using the new [**MeshData**](https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Mesh.AllocateWritableMeshData.html) functionality in Unity **2020.1+**.
 
 The code comes in the form of a static class with the 
 ```csharp
