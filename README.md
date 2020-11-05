@@ -14,7 +14,7 @@ Add this line to your `Packages/manifest.json` file
 ```
 
 ## Usage of the example
-- Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [FastMeshCopy.cs](FastMeshCopy/FastMeshCopy.cs) in your Unity Project.
+- ~~Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [FastMeshCopy.cs](https://github.com/GeorgeAdamon/FastMeshCopy/blob/master/UnityProject/Assets/FastMeshCopy/Runtime/FastMeshCopy.cs) in your Unity Project.
 - Attach the [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) to a GameObject, and reference a Mesh in the inMesh field.
 - Run the game, and press the **Spacebar** to perform the mesh copy.
 
