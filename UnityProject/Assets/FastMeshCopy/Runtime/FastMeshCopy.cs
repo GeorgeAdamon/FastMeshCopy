@@ -67,7 +67,7 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                     // 4 bytes per component by default
                     var size = FLOAT_SIZE;
                     
-                    switch (sourceVertexFormat[i].format)
+                    switch (vertexFormat[i].format)
                     {
                         case VertexAttributeFormat.Float16:
                         case VertexAttributeFormat.UNorm16:
@@ -83,9 +83,7 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                             size = 1;
                             break;
                     }
-                    
-                    sourceVertexSize += sourceVertexFormat[i].dimension * size;
-                    
+                                        
                     vertexSize += vertexFormat[i].dimension * size;
                 }
 
