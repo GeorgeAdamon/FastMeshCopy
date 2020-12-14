@@ -63,7 +63,31 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                 var vertexSize = 0;
 
                 for (var i = 0; i < vertexFormat.Length; i++)
-                    vertexSize += vertexFormat[i].dimension * FLOAT_SIZE;
+                {
+                    // 4 bytes per component by default
+                    var size = FLOAT_SIZE;
+                    
+                    switch (sourceVertexFormat[i].format)
+                    {
+                        case VertexAttributeFormat.Float16:
+                        case VertexAttributeFormat.UNorm16:
+                        case VertexAttributeFormat.SNorm16:
+                        case VertexAttributeFormat.UInt16:
+                        case VertexAttributeFormat.SInt16:
+                            size = 2;
+                            break;
+                        case VertexAttributeFormat.UNorm8:
+                        case VertexAttributeFormat.SNorm8:
+                        case VertexAttributeFormat.UInt8:
+                        case VertexAttributeFormat.SInt8:
+                            size = 1;
+                            break;
+                    }
+                    
+                    sourceVertexSize += sourceVertexFormat[i].dimension * size;
+                    
+                    vertexSize += vertexFormat[i].dimension * size;
+                }
 
 
                 //-------------------------------------------------------------
