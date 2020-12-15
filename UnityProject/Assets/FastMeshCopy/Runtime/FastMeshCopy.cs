@@ -9,7 +9,7 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
 {
     /// <summary>
     /// Author: George Adamopoulos
-    /// Version: 1.0.0
+    /// Version: 1.0.1
     /// Date: 2020-05-03
     /// License: GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007
     /// </summary>
