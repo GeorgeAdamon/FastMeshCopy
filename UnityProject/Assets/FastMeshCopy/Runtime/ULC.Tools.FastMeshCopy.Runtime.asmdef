@@ -1,6 +1,10 @@
 {
     "name": "ULC.Tools.FastMeshCopy.Runtime",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "Unity.Mathematics",
+        "Unity.Burst"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,
