@@ -7,7 +7,7 @@ public static void CopyTo(this Mesh inMesh, ref Mesh outMesh){...}
 ``` 
 and
 ```csharp
-public static unsafe Mesh CopyReplicate(this Mesh mesh, NativeArray<float4x4> matrices) {...}
+public static Mesh CopyReplicate(this Mesh mesh, NativeArray<float4x4> matrices) {...}
 ```
 extension methods.  
 Simply call this method on a Mesh instance to perform either a **Single Copy**, or a **Multi-Copy** based on an array of transformations + **Merge**.
