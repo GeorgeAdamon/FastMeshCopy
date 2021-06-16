@@ -153,7 +153,6 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
         /// </summary>
         public static Mesh CopyReplicate(this Mesh mesh, NativeArray<float4x4> matrices)
         {
-
             using (var readArray = Mesh.AcquireReadOnlyMeshData(mesh))
             {
                 var m = new Mesh
@@ -201,7 +200,8 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                 // Essentially skip the first 12 bytes (= 3 floats) of every vertex,
                 // because we know they represent position, and we handled this above.
                 // Everything that is not VertexPosition will be written to stream 1 !
-                unsafe {
+                unsafe
+                {
                     if (hasStream1)
                     {
                         var inData  = readData.GetVertexData<byte>();
@@ -213,15 +213,17 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                                 (byte*) inData.GetUnsafeReadOnlyPtr(); // Begin after the first vertex = first 12 bytes
                         var copies = matrices.Length;
 
-                        var noPosition = new NativeArray<byte>(destElementSize * readData.vertexCount, Allocator.TempJob);
+                        var noPosition =
+                                new NativeArray<byte>(destElementSize * readData.vertexCount, Allocator.TempJob);
 
                         // REMOVE POSITIONS FROM ORIGINAL MESH STREAM
-                        Unity.Collections.LowLevel.Unsafe.UnsafeUtility.MemCpyStride(destination: noPosition.GetUnsafePtr(),
-                         destinationStride: destElementSize,
-                         source: source,
-                         sourceStride: sourceVertexSize,
-                         elementSize: destElementSize,
-                         count: readData.vertexCount);
+                        Unity.Collections.LowLevel.Unsafe.UnsafeUtility
+                             .MemCpyStride(destination: noPosition.GetUnsafePtr(),
+                                           destinationStride: destElementSize,
+                                           source: source,
+                                           sourceStride: sourceVertexSize,
+                                           elementSize: destElementSize,
+                                           count: readData.vertexCount);
 
                         // REPLICATE NORMALS,COLORS,UV ETC INTO THE MERGED MESH
                         UnsafeUtility.MemCpyReplicate(destination: outData, source: noPosition, count: copies);
@@ -268,9 +270,9 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                                 originalIndexCount  = sourceIndexCount
                         }.Schedule(destIndexCount, 128).Complete();
                     }
-                }
-              
+
                     inVertices.Dispose();
+                }
 
                 writeData.subMeshCount = 1;
                 writeData.SetSubMesh(0, new SubMeshDescriptor(0, destIndexCount, mesh.GetTopology(0)));
@@ -278,7 +280,6 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                 m.RecalculateBounds();
 
                 return m;
-
             }
 
         #else
