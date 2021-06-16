@@ -1,7 +1,7 @@
 # FastMeshCopy
 Zero-allocation copying of Meshes using the new [**MeshData**](https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Mesh.AllocateWritableMeshData.html) functionality in Unity **2020.1+**.
 
-The code comes in the form of a static class with the 
+The code comes in the form of the static class [`FastMeshCopy`](UnityProject/Assets/FastMeshCopy/Runtime/FastMeshCopy.cs) with the 
 ```csharp
 public static void CopyTo(this Mesh inMesh, ref Mesh outMesh){...}
 ``` 
