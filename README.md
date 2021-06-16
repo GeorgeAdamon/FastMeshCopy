@@ -5,7 +5,12 @@ The code comes in the form of a static class with the
 ```csharp
 public static void CopyTo(this Mesh inMesh, ref Mesh outMesh){...}
 ``` 
-extension method. Simply call this method on a Mesh instance to perform the copy.
+and
+```csharp
+public static unsafe Mesh CopyReplicate(this Mesh mesh, NativeArray<float4x4> matrices) {...}
+```
+extension methods.  
+Simply call this method on a Mesh instance to perform either a **Single Copy**, or a **Multi-Copy** based on an array of transformations + **Merge**.
 
 ## Add as a Unity Package
 Add this line to your `Packages/manifest.json` file
@@ -13,7 +18,7 @@ Add this line to your `Packages/manifest.json` file
 "ulc-tools-fastmeshcopy": "https://github.com/GeorgeAdamon/FastMeshCopy.git?path=/UnityProject/Assets/FastMeshCopy#master",
 ```
 
-## Usage of the example
+## Usage of the Single Copy example
 - ~~Copy both [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) and [FastMeshCopy.cs](https://github.com/GeorgeAdamon/FastMeshCopy/blob/master/UnityProject/Assets/FastMeshCopy/Runtime/FastMeshCopy.cs) in your Unity Project.~~
 - Attach the [MeshCopyExample.cs](FastMeshCopy/MeshCopyExample.cs) to a GameObject, and reference a Mesh in the inMesh field.
 - Run the game, and press the **Spacebar** to perform the mesh copy.
