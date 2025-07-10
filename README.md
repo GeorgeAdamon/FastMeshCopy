@@ -2,9 +2,10 @@
 Zero-allocation copying of Meshes using the new [**MeshData**](https://docs.unity3d.com/2020.1/Documentation/ScriptReference/Mesh.AllocateWritableMeshData.html) functionality in Unity **2020.1+**.
 
 ## JULY 2025 UPDATE
-**-TESTED all the way to Unity 6000.0.**
-- Refactored the project structure to conform to Unity package naming and folder conventions
-- The `CopyReplicate` method no longer creates a new Mesh. It accepts a reference to a Mesh object, just like the `CopyTo` method
+- **Testedwith Unity 6000.0.52f1 LTS**
+- **BREAKING CHANGES:**
+  - Refactored the project structure to conform to Unity package naming and folder conventions. The package must be added using a different name and path (See below).
+  - The `CopyReplicate` method no longer creates a new Mesh. It accepts a reference to a Mesh object, just like the `CopyTo` method.
 
 ## API
 The code comes in the form of the static class [`FastMeshCopy`](UnityProject/Assets/FastMeshCopy/Runtime/FastMeshCopy.cs) with the 
