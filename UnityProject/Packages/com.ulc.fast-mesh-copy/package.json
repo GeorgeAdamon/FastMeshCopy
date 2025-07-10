@@ -1,0 +1,21 @@
+{
+  "name": "com.ulc.fast-mesh-copy",
+  "version": "2.0.0",
+  "displayName": "[ULC] Fast Mesh Copy",
+  "description": "Zero-allocation copying of Meshes using the new MeshData functionality in Unity 2020.1+",
+  "unity": "2020.1",
+  "keywords": [
+    "Mesh",
+    "MeshData",
+    "Native"
+  ],
+  "dependencies": {
+    "com.unity.mathematics": "1.2.1",
+    "com.unity.burst": "1.5.4"
+  },
+  "author": {
+    "name": "George Adamopoulos",
+    "email": "ga.adamon@gmail.com",
+    "url": "https://github.com/GeorgeAdamon/FastMeshCopy"
+  }
+}

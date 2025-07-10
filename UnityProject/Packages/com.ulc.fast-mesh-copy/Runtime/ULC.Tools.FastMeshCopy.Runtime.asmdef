@@ -1,11 +1,13 @@
 {
-    "name": "ULC.Tools.FastMeshCopy.Tests",
+    "name": "UnchartedLimbo.FastMeshCopy.Runtime",
+    "rootNamespace": "UnchartedLimbo.FastMeshCopy.Runtime",
     "references": [
-        "GUID:0cd2acaf7c308174f84c55241253f210"
+        "Unity.Mathematics",
+        "Unity.Burst"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

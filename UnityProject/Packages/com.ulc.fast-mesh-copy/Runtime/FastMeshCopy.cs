@@ -37,7 +37,7 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
                 outMesh.Clear();
             }
 
-            outMesh.name   = inMesh.name;
+            outMesh.name   = inMesh.name + "_copy";
             outMesh.bounds = inMesh.bounds;
 
             using (var readArray = Mesh.AcquireReadOnlyMeshData(inMesh))
@@ -151,138 +151,146 @@ namespace UnchartedLimbo.Tools.FastMeshCopy.Runtime
         /// <summary>
         /// Combine transformed instances of a mesh.
         /// </summary>
-        public static Mesh CopyReplicate(this Mesh mesh, NativeArray<float4x4> matrices)
+        public static void CopyReplicate(this Mesh inMesh, ref Mesh outMesh, NativeArray<float4x4> matrices)
         {
-            using (var readArray = Mesh.AcquireReadOnlyMeshData(mesh))
+            if (inMesh == null) return;
+            
+            if (outMesh == null)
             {
-                var m = new Mesh
+                outMesh = new Mesh
                 {
-                        subMeshCount = 1,
-                        indexFormat  = IndexFormat.UInt32
+                    subMeshCount = 1,
+                    indexFormat  = IndexFormat.UInt32
                 };
-
-                //-------------------------------------------------------------
-                // COLLECT ALL NECESSARY INPUT INFO
-                //-------------------------------------------------------------
-                // Source -----------------------------------------------------
-                var readData = readArray[0];
-
-                // Formats
-                var sourceVertexSize  = mesh.SizeOfVertex();
-                var sourceIndexFormat = mesh.indexFormat;
-
-                // Counts
-                var sourceVertexCount = readData.vertexCount;
-                var sourceIndexCount  = readData.GetIndexCount();
-
-                // Destination -----------------------------------------------------
-                var destIndexFormat  = IndexFormat.UInt32;
-                var destVertexFormat = mesh.CopyVertexFormat(0, 1);
-                var destIndexCount   = sourceIndexCount  * matrices.Length;
-                var destVertexCount  = sourceVertexCount * matrices.Length;
-
-                var hasStream1 = !mesh.IsVertexPositionOnly();
-
-
-                //-------------------------------------------------------------
-                // OUTPUT SETUP
-                //-------------------------------------------------------------
-                var writeArray = Mesh.AllocateWritableMeshData(1);
-                var writeData  = writeArray[0];
-
-                writeData.SetVertexBufferParams(destVertexCount, destVertexFormat);
-                writeData.SetIndexBufferParams(destIndexCount, destIndexFormat);
-
-                //-------------------------------------------------------------
-                // MEMORY COPYING
-                //-------------------------------------------------------------
-                // Replicate every other vertex attribute ---------------------
-                // Essentially skip the first 12 bytes (= 3 floats) of every vertex,
-                // because we know they represent position, and we handled this above.
-                // Everything that is not VertexPosition will be written to stream 1 !
-                unsafe
-                {
-                    if (hasStream1)
-                    {
-                        var inData  = readData.GetVertexData<byte>();
-                        var outData = writeData.GetVertexData<byte>(1); // Notice that we write to stream 1!
-
-                        var destElementSize = sourceVertexSize - FLOAT3_SIZE;
-                        var source =
-                                FLOAT3_SIZE +
-                                (byte*) inData.GetUnsafeReadOnlyPtr(); // Begin after the first vertex = first 12 bytes
-                        var copies = matrices.Length;
-
-                        var noPosition =
-                                new NativeArray<byte>(destElementSize * readData.vertexCount, Allocator.TempJob);
-
-                        // REMOVE POSITIONS FROM ORIGINAL MESH STREAM
-                        Unity.Collections.LowLevel.Unsafe.UnsafeUtility
-                             .MemCpyStride(destination: noPosition.GetUnsafePtr(),
-                                           destinationStride: destElementSize,
-                                           source: source,
-                                           sourceStride: sourceVertexSize,
-                                           elementSize: destElementSize,
-                                           count: readData.vertexCount);
-
-                        // REPLICATE NORMALS,COLORS,UV ETC INTO THE MERGED MESH
-                        UnsafeUtility.MemCpyReplicate(destination: outData, source: noPosition, count: copies);
-
-                        noPosition.Dispose();
-                    }
-
-
-                    // Transform Vertices ----------------------------------------
-                    var inVertices  = new NativeArray<Vector3>(sourceVertexCount, Allocator.TempJob);
-                    var outVertices = writeData.GetVertexData<float3>(0);
-
-                    readData.GetVertices(inVertices);
-
-                    new HelperJobs.TransformVerticesJob
-                    {
-                            inputVertices  = inVertices.Reinterpret<float3>(),
-                            matrices       = matrices,
-                            outputVertices = outVertices
-                    }.Schedule(destVertexCount, 128).Complete();
-
-
-                    //Indices ---------------------------------------------------
-                    var inData2  = readData.GetIndexData<byte>().GetUnsafeReadOnlyPtr();
-                    var outData2 = writeData.GetIndexData<int>();
-
-                    if (sourceIndexFormat == IndexFormat.UInt16)
-                    {
-                        new HelperJobs.OffsetReplicateIndicesJob<ushort>
-                        {
-                                inputIndices        = inData2,
-                                outputIndices       = outData2,
-                                originalVertexCount = sourceVertexCount,
-                                originalIndexCount  = sourceIndexCount
-                        }.Schedule(destIndexCount, 128).Complete();
-                    }
-                    else
-                    {
-                        new HelperJobs.OffsetReplicateIndicesJob<uint>
-                        {
-                                inputIndices        = inData2,
-                                outputIndices       = outData2,
-                                originalVertexCount = sourceVertexCount,
-                                originalIndexCount  = sourceIndexCount
-                        }.Schedule(destIndexCount, 128).Complete();
-                    }
-
-                    inVertices.Dispose();
-                }
-
-                writeData.subMeshCount = 1;
-                writeData.SetSubMesh(0, new SubMeshDescriptor(0, destIndexCount, mesh.GetTopology(0)));
-                Mesh.ApplyAndDisposeWritableMeshData(writeArray, m);
-                m.RecalculateBounds();
-
-                return m;
+            }
+            else
+            {
+                outMesh.Clear();
             }
 
-        #else
+            outMesh.name   = inMesh.name + "_replicated";
+
+            using var readArray = Mesh.AcquireReadOnlyMeshData(inMesh);
+
+            //-------------------------------------------------------------
+            // COLLECT ALL NECESSARY INPUT INFO
+            //-------------------------------------------------------------
+            // Source -----------------------------------------------------
+            var readData = readArray[0];
+
+            // Formats
+            var sourceVertexSize  = inMesh.SizeOfVertex();
+            var sourceIndexFormat = inMesh.indexFormat;
+
+            // Counts
+            var sourceVertexCount = readData.vertexCount;
+            var sourceIndexCount  = readData.GetIndexCount();
+
+            // Destination -----------------------------------------------------
+            var destIndexFormat  = IndexFormat.UInt32;
+            var destVertexFormat = inMesh.CopyVertexFormat(0, 1);
+            var destIndexCount   = sourceIndexCount  * matrices.Length;
+            var destVertexCount  = sourceVertexCount * matrices.Length;
+
+            var hasStream1 = !inMesh.IsVertexPositionOnly();
+
+
+            //-------------------------------------------------------------
+            // OUTPUT SETUP
+            //-------------------------------------------------------------
+            var writeArray = Mesh.AllocateWritableMeshData(1);
+            var writeData  = writeArray[0];
+
+            writeData.SetVertexBufferParams(destVertexCount, destVertexFormat);
+            writeData.SetIndexBufferParams(destIndexCount, destIndexFormat);
+
+            //-------------------------------------------------------------
+            // MEMORY COPYING
+            //-------------------------------------------------------------
+            // Replicate every other vertex attribute ---------------------
+            // Essentially skip the first 12 bytes (= 3 floats) of every vertex,
+            // because we know they represent position, and we handled this above.
+            // Everything that is not VertexPosition will be written to stream 1 !
+            unsafe
+            {
+                if (hasStream1)
+                {
+                    var inData  = readData.GetVertexData<byte>();
+                    var outData = writeData.GetVertexData<byte>(1); // Notice that we write to stream 1!
+
+                    var destElementSize = sourceVertexSize - FLOAT3_SIZE;
+                    var source =
+                        FLOAT3_SIZE +
+                        (byte*) inData.GetUnsafeReadOnlyPtr(); // Begin after the first vertex = first 12 bytes
+                    var copies = matrices.Length;
+
+                    var noPosition =
+                        new NativeArray<byte>(destElementSize * readData.vertexCount, Allocator.TempJob);
+
+                    // REMOVE POSITIONS FROM ORIGINAL MESH STREAM
+                    UnityUnsafeUtility
+                        .MemCpyStride(destination: noPosition.GetUnsafePtr(),
+                            destinationStride: destElementSize,
+                            source: source,
+                            sourceStride: sourceVertexSize,
+                            elementSize: destElementSize,
+                            count: readData.vertexCount);
+
+                    // REPLICATE NORMALS,COLORS,UV ETC INTO THE MERGED MESH
+                    UnsafeUtility.MemCpyReplicate(destination: outData, source: noPosition, count: copies);
+
+                    noPosition.Dispose();
+                }
+
+
+                // Transform Vertices ----------------------------------------
+                var inVertices  = new NativeArray<Vector3>(sourceVertexCount, Allocator.TempJob);
+                var outVertices = writeData.GetVertexData<float3>(0);
+
+                readData.GetVertices(inVertices);
+
+                new HelperJobs.TransformVerticesJob
+                {
+                    inputVertices  = inVertices.Reinterpret<float3>(),
+                    matrices       = matrices,
+                    outputVertices = outVertices
+                }.Schedule(destVertexCount, 128).Complete();
+
+
+                //Indices ---------------------------------------------------
+                var inData2  = readData.GetIndexData<byte>().GetUnsafeReadOnlyPtr();
+                var outData2 = writeData.GetIndexData<int>();
+
+                if (sourceIndexFormat == IndexFormat.UInt16)
+                {
+                    new HelperJobs.OffsetReplicateIndicesJob<ushort>
+                    {
+                        inputIndices        = inData2,
+                        outputIndices       = outData2,
+                        originalVertexCount = sourceVertexCount,
+                        originalIndexCount  = sourceIndexCount
+                    }.Schedule(destIndexCount, 128).Complete();
+                }
+                else
+                {
+                    new HelperJobs.OffsetReplicateIndicesJob<uint>
+                    {
+                        inputIndices        = inData2,
+                        outputIndices       = outData2,
+                        originalVertexCount = sourceVertexCount,
+                        originalIndexCount  = sourceIndexCount
+                    }.Schedule(destIndexCount, 128).Complete();
+                }
+
+                inVertices.Dispose();
+            }
+
+            writeData.subMeshCount = 1;
+            writeData.SetSubMesh(0, new SubMeshDescriptor(0, destIndexCount, inMesh.GetTopology(0)));
+            Mesh.ApplyAndDisposeWritableMeshData(writeArray, outMesh);
+            outMesh.RecalculateBounds();
+
+#else
             /// <summary>
             /// Attempts to copy the data of the current <see cref="Mesh"/> to another one, as fast as possible,
             /// with minimal allocations (a few tens of bytes in scenarios with very large meshes).
